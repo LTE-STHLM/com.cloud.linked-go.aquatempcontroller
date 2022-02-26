@@ -1,0 +1,16 @@
+[
+    {
+      "id": "username",
+      "type": "text",
+      "label": { "en": "Username" },
+      "value": "",
+      "hint": { "en": "The name of the user." }
+    },
+    {
+      "id": "password",
+      "type": "password",
+      "label": { "en": "Password" },
+      "value": "",
+      "hint": { "en": "The password of the user." }
+    }
+  ]
