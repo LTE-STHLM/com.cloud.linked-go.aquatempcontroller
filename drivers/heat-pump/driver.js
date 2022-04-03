@@ -5,6 +5,14 @@ const axios = require('axios');
 
 class API {
   constructor() {
+
+/*     axios.interceptors.response.use(response => {
+      console.log('Intercept response.')
+      return response;
+   }, error => {
+     throw error; //Try again? Can also throw error.
+   }); */
+
     this.credentials = {};
     this.token = "";
 
@@ -40,20 +48,29 @@ class API {
       })
       .catch(error => {
         console.error(error);
-        success = false;
+        if(error.response.status == 401){
+          console.log("401...");
+          try {
+            this.login(this.credentials);
+          } catch ( error ) {
+            console.log( error + " Not valid login?");
+            success = false;
+          };
+        } else {
+          success = false;
+        }
       })
 
       if(success){
         return r;
       } else {
-        return false;
+        throw "failed to update.";
       }
 
   }
 
   async login(credentials){
     this.credentials = credentials;
-
     console.log( this.credentials + " " + this.credentials.username + " " + this.credentials.password );
 
     let success = false;
@@ -142,8 +159,10 @@ class API {
     let data;
     try {
       data = await device.driver.DeviceAPI.getDeviceData(device.id);
+
     } catch (err){
       console.log(err);
+      return;
     }
     let parsedData = {};
     data.forEach( item => {
@@ -152,7 +171,6 @@ class API {
     //console.log(parsedData);
 
     device.setSettings(parsedData);
-    console.log(device.getSettings())
 
     device.setCapabilityValue('onoff', Boolean(parsedData['Power'] == "1"));
     device.setCapabilityValue('target_temperature',Number(parsedData['R02'])).catch((err) =>{
